@@ -1,0 +1,233 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b0d0c">
+  <meta name="description" content="NutriTrack membantu mencatat makanan, memantau nutrisi, dan melihat progres kebugaran.">
+  <title>NutriTrack — Nutrition Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- Supabase browser SDK (pinned) and public project configuration. -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.119.0" defer></script>
+  <script src="backend/supabase-config.js" defer></script>
+  <script src="backend/supabase-client.js" defer></script>
+  <script src="script.js" defer></script>
+  <script src="entry.js" defer></script>
+</head>
+<body>
+
+  <section class="entry-shell" id="entryShell" aria-label="NutriTrack account flow" hidden>
+    <div class="entry-brand"><span class="entry-brand-mark">N</span><span><strong>NutriTrack</strong><small>NUTRITION TRACKER</small></span></div>
+    <div class="entry-layout">
+      <div class="entry-copy" id="entryCopy"></div>
+      <div class="entry-card-wrap"><div class="entry-card" id="entryCard"></div></div>
+    </div>
+    <p class="entry-footer">Your nutrition data is personal. You control what you log and what you share.</p>
+  </section>
+
+  <div class="app-shell" id="appShell" hidden>
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#dashboard" aria-label="NutriTrack Dashboard">
+        <span class="brand-mark"></span>
+        <span class="brand-copy"><strong>NutriTrack</strong><small>NUTRITION TRACKER</small></span>
+      </a>
+      <div class="side-divider"></div>
+      <p class="side-label">MENU</p>
+      <nav class="main-nav" aria-label="Navigasi utama">
+        <button class="nav-item active" data-view="dashboard"><span class="nav-symbol">◫</span>Dashboard</button>
+        <button class="nav-item" data-view="food"><span class="nav-symbol">＋</span>Food Diary</button>
+        <button class="nav-item" data-view="goals"><span class="nav-symbol">◎</span>Goals &amp; Calculator</button>
+        <button class="nav-item" data-view="progress"><span class="nav-symbol">↗</span>Progress</button>
+        <button class="nav-item" data-view="coach"><span class="nav-symbol">✦</span>Nutri Coach</button>
+      </nav>
+      <div class="side-divider secondary-divider"></div>
+      <button class="nav-item settings-link" data-view="settings"><span class="nav-symbol">⚙</span>Settings</button>
+      <div class="sidebar-spacer"></div>
+      <button class="sidebar-profile" data-view="settings" aria-label="Buka profile dan settings">
+        <span class="avatar" id="sidebarAvatar">A</span>
+        <span class="profile-mini"><strong id="sidebarName">Alex Morgan</strong><small>PERSONAL PLAN</small></span>
+      </button>
+    </aside>
+
+    <main class="main-content">
+      <header class="mobile-topbar">
+        <a class="brand mobile-brand" href="#dashboard"><span class="brand-mark"></span><span class="brand-copy"><strong>NutriTrack</strong><small>NUTRITION TRACKER</small></span></a>
+        <button class="icon-button" data-view="settings" aria-label="Profile dan settings">A</button>
+      </header>
+
+      <section class="view active" id="view-dashboard" aria-labelledby="dashboardTitle">
+        <header class="page-header">
+          <div><h1 id="dashboardTitle">Good morning, Alex</h1><p>Here's your nutrition overview for today.</p></div>
+          <div class="header-actions"><span class="date-pill" id="todayLabel">TUE, NOV 03</span><button class="icon-button notification-button" aria-label="Notifikasi">•</button><button class="button button-primary" data-view="food">＋ Add Food</button></div>
+        </header>
+        <div class="dashboard-top-grid">
+          <article class="card calories-card">
+            <div class="card-kicker-row"><span class="card-label">CALORIES TODAY</span><span class="status-pill"><i></i> ON TRACK</span></div>
+            <div class="big-metric"><strong id="dashCalories">1,840</strong><span>kcal consumed</span></div>
+            <p class="muted small" id="dashCalorieGoal">of 1,950 kcal daily target</p>
+            <div class="progress-track"><span class="progress-fill lime-fill" id="dashCalorieBar"></span></div>
+            <div class="metric-foot"><strong id="dashCaloriesLeft">110 kcal remaining</strong><span id="dashCaloriesPercent">94% of daily goal</span></div>
+          </article>
+          <article class="card hydration-card">
+            <span class="card-label">HYDRATION</span>
+            <div class="big-metric water-metric"><strong id="waterAmount">1.5</strong><span>/ <b id="waterTarget">2.5</b> L</span></div>
+            <p class="muted" id="waterGlasses">6 of 10 glasses today</p>
+            <div class="progress-track"><span class="progress-fill lime-fill" id="waterBar"></span></div>
+            <button class="button button-secondary log-water-button" id="logWaterBtn">＋ Log water</button>
+          </article>
+        </div>
+        <div class="macro-grid" id="dashboardMacros">
+          <article class="card macro-card"><span class="muted">Protein</span><strong><span id="dashProtein">92</span> g</strong><div class="progress-track"><span class="progress-fill lime-fill" id="dashProteinBar"></span></div><small id="dashProteinGoal">Target 135 g</small></article>
+          <article class="card macro-card"><span class="muted">Carbohydrates</span><strong><span id="dashCarbs">186</span> g</strong><div class="progress-track"><span class="progress-fill green-fill" id="dashCarbsBar"></span></div><small id="dashCarbsGoal">Target 195 g</small></article>
+          <article class="card macro-card"><span class="muted">Fat</span><strong><span id="dashFat">54</span> g</strong><div class="progress-track"><span class="progress-fill amber-fill" id="dashFatBar"></span></div><small id="dashFatGoal">Target 54 g</small></article>
+        </div>
+        <div class="dashboard-lower-grid">
+          <section class="meals-section">
+            <div class="section-header"><div><h2>Today's meals</h2><p id="mealCount">4 entries · 1,840 kcal logged</p></div><button class="button button-secondary" data-view="food">＋ Log meal</button></div>
+            <div class="dashboard-meals" id="dashboardMeals"></div>
+          </section>
+          <aside class="insights-column">
+            <article class="card coach-insight-card">
+              <div class="card-label icon-label"><span>✦</span> NUTRI COACH INSIGHT</div>
+              <h3 id="dashboardInsightTitle">A little more protein will go a long way.</h3>
+              <p class="muted" id="dashboardInsightText">You're making steady progress. Consider a protein-rich option for your next meal.</p>
+              <div class="suggestion-box"><small>DINNER IDEA</small><strong id="dashboardDinnerIdea">Salmon, tofu, or lentils</strong></div>
+              <button class="button button-secondary" data-view="coach">Open Nutri Coach</button>
+            </article>
+            <article class="card hydration-tip"><small>DAILY REMINDER</small><h3>Stay hydrated</h3><p class="muted" id="hydrationTipText">You're 1.0 L away from your daily water goal.</p></article>
+          </aside>
+        </div>
+        <p class="page-footnote">Your targets are estimates. Consistency matters more than perfection.</p>
+      </section>
+
+      <section class="view" id="view-food" aria-labelledby="foodTitle">
+        <header class="page-header">
+          <div><h1 id="foodTitle">Food Diary</h1><p>Track meals and keep your nutrition on course.</p></div>
+          <div class="header-actions"><span class="date-pill" id="foodDateLabel">TODAY</span><button class="icon-button notification-button" aria-label="Notifikasi">•</button><button class="button button-primary" id="openAddFood">＋ Add Food</button></div>
+        </header>
+        <div class="food-search-row"><label class="search-field"><span>⌕</span><input id="foodSearch" type="search" placeholder="Search foods, brands, or meals" autocomplete="off"><kbd>⌘ K</kbd></label><button class="button button-secondary" id="openCustomFood">＋ Custom food</button></div>
+        <div class="food-filter-row"><div class="filter-pills" id="mealFilters"><button class="filter-pill active" data-meal-filter="All">All foods</button><button class="filter-pill" data-meal-filter="Breakfast">Breakfast</button><button class="filter-pill" data-meal-filter="Lunch">Lunch</button><button class="filter-pill" data-meal-filter="Dinner">Dinner</button><button class="filter-pill" data-meal-filter="Snacks">Snacks</button></div><span class="muted small" id="foodCount">7 foods logged today</span></div>
+        <div class="search-results-panel" id="foodSearchResults" hidden></div>
+        <div class="food-layout">
+          <div class="meal-groups" id="foodMealGroups"></div>
+          <aside class="food-sidebar">
+            <article class="card daily-summary-card">
+              <div class="card-title-row"><h2>Daily summary</h2><small>TODAY</small></div>
+              <div class="summary-calories"><strong id="foodCalories">1,840 kcal</strong></div>
+              <p class="muted small" id="foodCalorieGoal">of 1,950 kcal daily target</p>
+              <div class="progress-track"><span class="progress-fill lime-fill" id="foodCalorieBar"></span></div>
+              <div class="metric-foot"><strong id="foodCaloriesLeft">110 kcal left</strong><span id="foodCaloriePercent">94% reached</span></div>
+            </article>
+            <article class="card food-macros-card"><h2>Macronutrients</h2><div id="foodMacroRows"></div></article>
+            <article class="card hydration-mini-card"><div class="card-title-row"><h3>Water intake</h3><strong id="foodWaterValue">1.5 / 2.5 L</strong></div><p class="muted small" id="foodWaterGlasses">6 of 10 glasses logged</p><div class="progress-track"><span class="progress-fill lime-fill" id="foodWaterBar"></span></div><button class="text-button" id="foodLogWater">＋ Add a glass</button></article>
+            <article class="card frequently-added-card"><h3>Frequently added</h3><div id="frequentlyAdded"></div></article>
+          </aside>
+        </div>
+        <p class="page-footnote">Tip: Weigh portions when possible for more accurate tracking.</p>
+      </section>
+
+      <section class="view" id="view-goals" aria-labelledby="goalsTitle">
+        <header class="page-header"><div><h1 id="goalsTitle">Goals &amp; Calculator</h1><p>Set a goal that fits your routine and lifestyle.</p></div><div class="header-actions"><span class="estimate-pill">PROFILE ESTIMATE</span><button class="icon-button notification-button" aria-label="Notifikasi">•</button></div></header>
+        <div class="info-banner"><span>✦</span>Your targets are estimates. Adjust your details to see how your daily needs may change.</div>
+        <div class="goals-layout">
+          <div class="goals-main-column">
+            <article class="card details-card">
+              <div class="card-section-heading"><h2>Your details</h2><p>Used to estimate your daily energy needs.</p></div>
+              <form id="goalForm" class="goal-form">
+                <div class="field"><label for="goalAge">Age</label><input id="goalAge" type="number" min="16" max="100" value="28" required></div>
+                <div class="field"><label for="goalHeight">Height</label><input id="goalHeight" type="number" min="100" max="250" step="0.1" value="175" required><span class="input-suffix">cm</span></div>
+                <div class="field"><label for="goalWeight">Current weight</label><input id="goalWeight" type="number" min="30" max="300" step="0.1" value="72.5" required><span class="input-suffix">kg</span></div>
+                <div class="field"><label for="goalActivity">Activity level</label><select id="goalActivity"><option value="1.2">Sedentary</option><option value="1.375">Lightly active</option><option value="1.55" selected>Moderately active</option><option value="1.725">Very active</option><option value="1.9">Extra active</option></select></div>
+                <div class="field"><label for="goalSex">Calculation profile</label><select id="goalSex"><option value="male" selected>Male</option><option value="female">Female</option><option value="other">Prefer not to say</option></select></div>
+                <p class="muted helper-copy">Some formulas use additional profile details. You can leave this blank for a general estimate.</p>
+              </form>
+            </article>
+            <article class="card main-goal-card">
+              <div class="card-section-heading"><h2>What's your main goal?</h2><p>Choose the direction that feels right for you.</p></div>
+              <div class="goal-options" id="goalOptions"><button class="goal-option selected" data-goal="cutting"><i></i><strong>Lose weight</strong><span>A gradual calorie deficit</span></button><button class="goal-option" data-goal="maintenance"><i></i><strong>Maintain</strong><span>Keep your current weight</span></button><button class="goal-option" data-goal="bulking"><i></i><strong>Gain weight</strong><span>A gradual calorie surplus</span></button></div>
+            </article>
+            <article class="card pace-card"><div class="card-title-row"><h2>Preferred pace</h2><strong id="paceValue">0.4 kg / week</strong></div><p class="muted small">A gentle pace can be easier to maintain over time.</p><input id="paceRange" type="range" min="0.2" max="0.8" step="0.1" value="0.4"><div class="range-labels"><span>Gentle</span><span>Balanced</span><span>Aggressive</span></div></article>
+          </div>
+          <aside class="goals-side-column">
+            <article class="card target-card"><div class="card-title-row"><h2>Your daily target</h2><small>ESTIMATE</small></div><p class="muted small">Estimated maintenance</p><strong class="maintenance-value" id="maintenanceValue">2,350 kcal</strong><div class="target-separator"></div><p class="muted small">Daily calorie target</p><strong class="target-calories" id="targetCalories">1,950 kcal</strong><p class="muted small" id="targetDifference">About 400 kcal below maintenance</p><div class="progress-track"><span class="progress-fill lime-fill" id="targetBar"></span></div><div class="metric-foot"><span>Selected pace</span><strong id="targetPace">−0.4 kg / week</strong></div></article>
+            <article class="card macro-target-card"><h2>Macro targets</h2><p class="muted small">Suggested daily distribution</p><div id="goalMacroRows"></div><p class="muted tiny">You can fine-tune these numbers later.</p></article>
+            <article class="ready-card"><h3>Ready to set your targets?</h3><p class="muted small">You can update your goals any time as your routine changes.</p><button class="button button-primary full-width" id="saveGoals">Save my goals</button></article>
+          </aside>
+        </div>
+        <p class="page-footnote">For general guidance only. Individual energy needs vary; consider professional advice for personal nutrition planning.</p>
+      </section>
+
+      <section class="view" id="view-progress" aria-labelledby="progressTitle">
+        <header class="page-header">
+          <div><h1 id="progressTitle">Progress &amp; Analytics</h1><p>See how your habits and nutrition are moving you forward.</p></div>
+          <div class="header-actions"><div class="period-switch" id="progressPeriods"><button data-period="7D">7D</button><button class="active" data-period="30D">30D</button><button data-period="90D">90D</button><button data-period="1Y">1Y</button></div><button class="icon-button notification-button" aria-label="Notifikasi">•</button><button class="button button-secondary" id="exportProgress">Export report</button></div>
+        </header>
+        <div class="progress-stat-grid">
+          <article class="card progress-stat"><span class="muted">Current weight</span><strong id="currentWeightMetric">72.5 kg</strong><small id="weightDeltaMetric">−1.8 kg from starting weight</small></article>
+          <article class="card progress-stat"><span class="muted">Goal progress</span><strong id="goalProgressMetric">52% complete</strong><small id="goalProgressHint">4.5 kg to reach your goal</small></article>
+          <article class="card progress-stat"><span class="muted">Logging consistency</span><strong id="consistencyMetric">82%</strong><small id="consistencyHint">5 of 7 days logged this week</small></article>
+        </div>
+        <div class="analytics-grid">
+          <article class="card weight-chart-card"><div class="chart-heading"><div><h2>Weight trend</h2><p class="muted small" id="weightTrendPeriod">Your weight over the last 8 weeks</p></div><div class="chart-current"><strong id="chartCurrentWeight">72.5 kg</strong><small>CURRENT WEIGHT</small><button class="text-button" id="logWeightBtn">＋ Log weight</button></div></div><div class="chart-legend"><span class="legend-weight"></span> Weight <span class="legend-goal"></span> Goal weight</div><div class="chart-area" id="weightChart" role="img" aria-label="Grafik tren berat badan"></div><div class="weight-history"><div class="weight-history-heading"><h3>Recent entries</h3><span>Last 8 measurements</span></div><div id="weightHistoryList" class="weight-history-list"><p class="weight-history-empty">Loading weight history…</p></div></div></article>
+          <article class="card goal-progress-card"><h2>Your goal</h2><p class="muted small">A steady path toward your target</p><div class="goal-range"><span id="goalStartWeight">Start 76.8 kg</span><strong id="goalEndWeight">Goal 68.0 kg</strong></div><div class="progress-track"><span class="progress-fill lime-fill" id="goalProgressBar"></span></div><small id="goalPercentText">52% of your total journey completed</small><div class="goal-detail-list"><div><span>Remaining</span><strong id="goalRemaining">4.5 kg</strong></div><div><span>Weekly average</span><strong id="weeklyAverage">−0.3 kg</strong></div></div><div class="milestone-box"><small>NEXT MILESTONE</small><strong id="nextMilestone">70 kg · 2.5 kg to go</strong></div></article>
+          <article class="card calorie-chart-card"><div class="chart-heading"><div><h2>Calorie intake</h2><p class="muted small">Daily average over the last 7 days</p></div><strong class="chart-current" id="calorieAverage">1,980 kcal avg.</strong></div><div id="calorieChart" class="bar-chart" role="img" aria-label="Grafik asupan kalori selama tujuh hari"></div><div class="chart-footnote"><span></span> Daily target <b id="chartCalorieTarget">1,950 kcal</b></div></article>
+          <article class="card weekly-consistency-card"><div class="card-title-row"><h2>Weekly consistency</h2><strong id="weeklyConsistencyLabel">5 / 7 days</strong></div><p class="muted small">Your habits are becoming routine</p><div class="consistency-big"><strong id="weeklyConsistencyValue">82%</strong><span><b>5 of 7 days logged</b><small>4-day current streak</small></span></div><div class="week-dots" id="weekDots"></div><p class="muted tiny">Keep logging to build your streak.</p></article>
+        </div>
+        <div class="progress-encouragement"><span>✦</span><p id="progressEncouragement">Nice work! Your average weight has moved down steadily. Keep focusing on repeatable habits.</p></div>
+        <p class="page-footnote">Trends are based on the example entries shown. Your real results may vary.</p>
+      </section>
+
+      <section class="view" id="view-coach" aria-labelledby="coachTitle">
+        <header class="page-header"><div><h1 id="coachTitle">Nutri Coach</h1><p>AI-powered answers for general nutrition questions, meal ideas, and healthy habits.</p></div><div class="header-actions"><span class="status-pill ready-pill" id="coachStatus"><i></i> GEMINI AI · GENERAL GUIDANCE</span><button class="button button-secondary" id="newChat">＋ New chat</button></div></header>
+        <div class="coach-layout">
+          <div class="coach-main-column">
+            <article class="card coach-welcome"><span class="coach-star">✦</span><div><small>YOUR NUTRITION COMPANION</small><h2>Hey <span id="coachName">Alex</span>, what would you like to work on today?</h2><p class="muted">Explore nutrition concepts, balanced meals, protein sources, and sustainable habits.</p></div></article>
+            <div class="chat-thread" id="chatThread" aria-live="polite"></div>
+            <div class="suggestion-area"><div class="suggestion-heading"><h3>Try asking</h3><span class="muted tiny">START WITH A SUGGESTION</span></div><div class="prompt-grid"><button class="prompt-button" data-prompt="Build a balanced plate">Build a balanced plate</button><button class="prompt-button" data-prompt="Easy high-protein meal ideas">Easy high-protein meal ideas</button><button class="prompt-button" data-prompt="Help me understand my macros">Help me understand my macros</button><button class="prompt-button" data-prompt="Suggest a few balanced meal ideas for today">Balanced meal ideas</button></div></div>
+            <div class="coach-privacy-note" role="note">Gemini only receives the question you type—not your saved profile, measurements, food diary, or account details. Please do not include personal identifiers, body measurements, or medical history.</div><form class="chat-input-row" id="chatForm"><span>＋</span><input id="chatInput" placeholder="Ask a general nutrition question..." maxlength="500" autocomplete="off"><button aria-label="Kirim pesan">↑</button></form>
+          </div>
+          <aside class="coach-side-column">
+            <article class="card snapshot-card"><div class="card-title-row"><h2>Your snapshot</h2><small>TODAY</small></div><strong class="snapshot-calories" id="coachCalories">1,840 / 1,950 kcal</strong><div class="progress-track"><span class="progress-fill lime-fill" id="coachCalorieBar"></span></div><small class="muted">MACROS</small><div id="coachMacroRows"></div><small class="muted coach-context-line" id="coachContextLine">Water 0 / 2.5 L · No weight log yet</small></article>
+            <article class="card next-step-card"><small>A SMALL NEXT STEP</small><h3 id="coachNextTitle">Add a protein-rich snack</h3><p class="muted" id="coachNextText">A simple snack can help close the gap without changing your main meals.</p><div class="recommended-food"><span>●</span><div><strong id="coachFoodName">Greek yogurt</strong><small id="coachFoodDetail">Approx. 17 g protein</small></div></div><button class="button button-secondary full-width" data-view="food">Explore food ideas</button></article>
+            <article class="card recent-topics-card"><h3>Recent topics</h3><div id="recentTopics"><p>Understanding protein <span>Yesterday</span></p><p>Meal prep for busy days <span>Oct 30</span></p><p>Daily water goal <span>Oct 28</span></p></div></article>
+            <article class="coach-safety-card"><strong>A helpful guide, not a diagnosis</strong><p>Nutri Coach offers general nutrition education and wellness ideas. It does not assess your saved health data or replace guidance from a qualified professional.</p></article>
+          </aside>
+        </div>
+        <p class="page-footnote">Your conversations can help make your nutrition journey easier, one step at a time.</p>
+      </section>
+
+      <section class="view" id="view-settings" aria-labelledby="settingsTitle">
+        <header class="page-header"><div><h1 id="settingsTitle">Profile &amp; Settings</h1><p>Manage your personal information and app preferences.</p></div><div class="header-actions"><span class="saved-status" id="saveStatus">● ALL CHANGES SAVED</span><button class="button button-primary" id="saveSettings">Save changes</button></div></header>
+        <article class="card profile-overview"><span class="profile-large-avatar" id="largeAvatar">A</span><div class="profile-identity"><h2 id="profileDisplayName">Alex Morgan</h2><p id="profileDisplayEmail">alex.morgan@example.com</p><small>PERSONAL PLAN</small></div><div class="profile-since"><span>Member since March 2025</span></div></article>
+        <div class="settings-layout">
+          <div class="settings-main-column">
+            <article class="card personal-info-card"><div class="card-section-heading"><h2>Personal information</h2><p>Keep your profile details up to date.</p></div><form id="settingsForm" class="settings-form"><div class="field"><label for="settingsName">Full name</label><input id="settingsName" value="Alex Morgan" maxlength="60"></div><div class="field"><label for="settingsEmail">Email address</label><input id="settingsEmail" type="email" value="alex.morgan@example.com"></div><div class="field"><label for="settingsBirth">Date of birth</label><input id="settingsBirth" type="date" value="1998-08-12"></div><div class="field"><label for="settingsGender">Gender</label><select id="settingsGender"><option>Prefer not to say</option><option>Female</option><option>Male</option><option>Other</option></select></div></form></article>
+            <article class="card preferences-card"><div class="card-section-heading"><h2>Dietary preferences</h2><p>Personalize food ideas and suggestions.</p></div><div class="preference-chips" id="dietPreferences"><button class="preference-chip active" data-preference="Balanced">Balanced</button><button class="preference-chip" data-preference="Vegetarian">Vegetarian</button><button class="preference-chip" data-preference="Vegan">Vegan</button><button class="preference-chip" data-preference="Pescatarian">Pescatarian</button><button class="preference-chip" data-preference="Gluten-free">Gluten-free</button><button class="preference-chip" data-preference="Dairy-free">Dairy-free</button><button class="preference-chip" data-preference="No restrictions">No restrictions</button></div><p class="muted tiny">Choose any that apply. These preferences can be changed at any time.</p></article>
+            <article class="card privacy-card"><h2>Privacy &amp; data</h2><div class="privacy-row"><div><strong>Profile visibility</strong><p class="muted small">Your nutrition profile is private by default.</p></div><span class="lime-text">Private　›</span></div><div class="privacy-row"><div><strong>Export your data</strong><p class="muted small">Download a copy of your nutrition history.</p></div><button class="button button-secondary" id="exportData">Export</button></div></article>
+          </div>
+          <aside class="settings-side-column">
+            <article class="card units-card"><h2>Measurement units</h2><div class="setting-row"><div><strong>Weight</strong><small>Display preference</small></div><select id="weightUnit"><option value="kg">Kilograms (kg)</option><option value="lb">Pounds (lb)</option></select></div><div class="setting-row"><div><strong>Height</strong><small>Display preference</small></div><select id="heightUnit"><option value="cm">Centimeters (cm)</option><option value="ft">Feet (ft)</option></select></div><div class="setting-row"><div><strong>Energy</strong><small>Display preference</small></div><select id="energyUnit"><option value="kcal">Kilocalories (kcal)</option><option value="kj">Kilojoules (kJ)</option></select></div></article>
+            <article class="card notifications-card"><h2>Notifications</h2><p class="muted small">Choose what you want to be reminded about.</p><label class="switch-row"><span><strong>Meal reminders</strong><small>A gentle nudge to log meals</small></span><input type="checkbox" id="mealReminder" checked><i></i></label><label class="switch-row"><span><strong>Hydration reminders</strong><small>Keep your water goal in sight</small></span><input type="checkbox" id="waterReminder" checked><i></i></label><label class="switch-row"><span><strong>Weekly progress summary</strong><small>A recap of your nutrition habits</small></span><input type="checkbox" id="weeklyReminder"><i></i></label></article>
+            <article class="card security-card"><h2>Account security</h2><div class="privacy-row"><div><strong>Password</strong><p class="muted small" id="passwordDescription">No account password in demo mode.</p></div><button class="button button-secondary" id="passwordInfo" type="button">Unavailable</button></div><div class="privacy-row" id="demoResetRow"><strong>Demo controls</strong><button class="text-button danger-text" id="resetDemo" type="button">Reset demo</button></div></article>
+          </aside>
+        </div>
+        <article class="danger-zone" id="localDataControls"><div><strong>Local demo data</strong><p>Remove the sample data stored only in this browser.</p></div><button class="button button-danger" id="deleteData" type="button">Delete local data</button></article>
+        <button class="text-button account-signout" id="signOutDemo">Sign out of NutriTrack</button><p class="page-footnote">You're in control of your data and preferences. Review these settings whenever you need.</p>
+      </section>
+    </main>
+  </div>
+
+  <nav class="mobile-bottom-nav" aria-label="Navigasi mobile"><button class="active" data-view="dashboard"><span>⌂</span>Home</button><button data-view="food"><span>▤</span>Diary</button><button data-view="goals"><span>◎</span>Goals</button><button data-view="progress"><span>↗</span>Progress</button><button data-view="coach"><span>✦</span>Coach</button></nav>
+
+  <div class="modal-backdrop" id="modalBackdrop" hidden>
+    <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-heading"><div><small id="modalEyebrow">NUTRITRACK</small><h2 id="modalTitle">Add food</h2></div><button class="icon-button modal-close" id="closeModal" aria-label="Tutup">×</button></div>
+      <div id="modalBody"></div>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
